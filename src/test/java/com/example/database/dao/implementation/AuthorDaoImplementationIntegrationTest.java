@@ -64,4 +64,16 @@ public class AuthorDaoImplementationIntegrationTest {
         assertThat(result).isPresent();
         assertThat(result.get()).isEqualTo(authorA);
     }
+
+    @Test
+    public void assertAuthorIsDeleted() {
+        Author authorA = TestDataUtil.createTestAuthor();
+        underTest.create(authorA);
+
+        underTest.delete(authorA.getId());
+
+        Optional<Author> result = underTest.findOne(authorA.getId());
+
+        assertThat(result).isEmpty();
+    }
 }
