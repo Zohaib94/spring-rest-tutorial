@@ -45,4 +45,14 @@ public class BookDaoImplementationTest {
                 eq("ISBN00123")
         );
     }
+
+    @Test
+    public void assertFindManyGeneratesCorrectSql() {
+        underTest.find();
+
+        verify(jdbcTemplate).query(
+                eq("SELECT isbn, title, author_id FROM books"),
+                ArgumentMatchers.<BookDaoImplementation.BookRowMapper>any()
+        );
+    }
 }

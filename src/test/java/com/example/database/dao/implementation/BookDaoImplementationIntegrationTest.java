@@ -4,18 +4,22 @@ import com.example.database.TestDataUtil;
 import com.example.database.dao.AuthorDao;
 import com.example.database.domain.Author;
 import com.example.database.domain.Book;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BookDaoImplementationIntegrationTest {
 
     private BookDaoImplementation underTest;
@@ -40,5 +44,25 @@ public class BookDaoImplementationIntegrationTest {
 
         assertThat(result).isPresent();
         assertThat(result.get()).isEqualTo(book);
+    }
+
+    @Test
+    public void assertMultipleBooksAreCreatedAndLoaded() {
+        Author author = TestDataUtil.createTestAuthor();
+        authorDao.create(author);
+
+        Book bookA = TestDataUtil.createTestBook();
+        bookA.setAuthorId(author.getId());
+
+        Book bookB = TestDataUtil.createTestBookB();
+        bookB.setAuthorId(author.getId());
+
+        underTest.create(bookA);
+        underTest.create(bookB);
+
+        List<Book> bookList = underTest.find();
+
+        Assertions.assertThat(bookList).hasSize(2);
+        Assertions.assertThat(bookList).containsExactly(bookA, bookB);
     }
 }
