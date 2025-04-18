@@ -1,8 +1,8 @@
 package com.example.database.repositories;
 
 import com.example.database.TestDataUtil;
-import com.example.database.domain.Author;
-import com.example.database.domain.Book;
+import com.example.database.domain.entities.Author;
+import com.example.database.domain.entities.Book;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

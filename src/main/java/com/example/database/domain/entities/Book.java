@@ -1,4 +1,4 @@
-package com.example.database.domain;
+package com.example.database.domain.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
