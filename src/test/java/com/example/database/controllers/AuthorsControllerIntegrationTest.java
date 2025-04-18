@@ -63,4 +63,15 @@ public class AuthorsControllerIntegrationTest {
                 MockMvcResultMatchers.jsonPath("$.age").value(author.getAge())
         );
     }
+
+    @Test
+    public void assertSuccessonListFetch() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/authors")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
 }
