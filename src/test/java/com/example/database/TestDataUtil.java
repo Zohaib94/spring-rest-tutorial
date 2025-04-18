@@ -14,6 +14,14 @@ public final class TestDataUtil {
                 .build();
     }
 
+    public static Author createTestAuthorB() {
+        return Author.builder()
+                .id(2L)
+                .name("Zohaib")
+                .age(30)
+                .build();
+    }
+
     public static Book createTestBook() {
         return Book.builder()
                 .isbn("ISBN00123")

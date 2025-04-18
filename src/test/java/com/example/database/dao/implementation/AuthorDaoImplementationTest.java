@@ -45,4 +45,14 @@ public class AuthorDaoImplementationTest {
                 eq(1L)
         );
     }
+
+    @Test
+    public void assertFindManyGeneratesCorrectSql() {
+        underTest.find();
+
+        verify(jdbcTemplate).query(
+                eq("SELECT id, name, age FROM authors"),
+                ArgumentMatchers.<AuthorDaoImplementation.AuthorRowMapper>any()
+        );
+    }
 }
