@@ -3,6 +3,7 @@ package com.example.database.dao.implementation;
 import com.example.database.domain.Author;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +35,17 @@ public class AuthorDaoImplementationTest {
                 eq(1L),
                 eq("Zohaib"),
                 eq(30)
+        );
+    }
+
+    @Test
+    public void assertFindOneGeneratesCorrectSql() {
+        underTest.findOne(1L);
+
+        verify(jdbcTemplate).query(
+                eq("SELECT id, name, age FROM authors WHERE id = ? LIMIT 1"),
+                ArgumentMatchers.<AuthorDaoImplementation.AuthorRowMapper>any(),
+                eq(1L)
         );
     }
 }
