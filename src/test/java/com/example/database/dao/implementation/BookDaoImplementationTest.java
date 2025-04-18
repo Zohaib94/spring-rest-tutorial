@@ -1,5 +1,6 @@
 package com.example.database.dao.implementation;
 
+import com.example.database.TestDataUtil;
 import com.example.database.domain.Book;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,11 +23,7 @@ public class BookDaoImplementationTest {
 
     @Test
     public void assertCreateBookGeneratesCorrectSql() {
-        Book book = Book.builder()
-                .isbn("ISBN00123")
-                .title("My book")
-                .authorId(1L)
-                .build();
+        Book book = TestDataUtil.createTestBook();
 
         underTest.create(book);
 

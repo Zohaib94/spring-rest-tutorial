@@ -1,5 +1,6 @@
 package com.example.database.dao.implementation;
 
+import com.example.database.TestDataUtil;
 import com.example.database.domain.Author;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,11 +23,7 @@ public class AuthorDaoImplementationTest {
 
     @Test
     public void assertCreateAuthorGeneratesCorrectSql() {
-        Author author = Author.builder()
-                .id(1L)
-                .name("Zohaib")
-                .age(30)
-                .build();
+        Author author = TestDataUtil.createTestAuthor();
 
         underTest.create(author);
 

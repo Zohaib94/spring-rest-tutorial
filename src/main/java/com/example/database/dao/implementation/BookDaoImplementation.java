@@ -5,12 +5,14 @@ import com.example.database.domain.Author;
 import com.example.database.domain.Book;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class BookDaoImplementation implements BookDao {
     private final JdbcTemplate jdbcTemplate;
 
