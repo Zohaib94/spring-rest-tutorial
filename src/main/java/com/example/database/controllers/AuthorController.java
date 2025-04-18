@@ -40,5 +40,4 @@ public class AuthorController {
         List<Author> authors = authorService.findAll();
         return authors.stream().map(authorMapper::mapTo).collect(Collectors.toList());
     }
-    
 }

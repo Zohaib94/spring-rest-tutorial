@@ -2,6 +2,7 @@ package com.example.database.controllers;
 
 import com.example.database.TestDataUtil;
 import com.example.database.domain.entities.Book;
+import com.example.database.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class BookControllerIntegrationTests {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
+    private BookService bookService;
 
     @Autowired
-    public BookControllerIntegrationTests(MockMvc mockMvc) {
+    public BookControllerIntegrationTests(MockMvc mockMvc, BookService bookService) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
+        this.bookService = bookService;
     }
 
     @Test
@@ -56,5 +59,32 @@ public class BookControllerIntegrationTests {
       ).andExpect(
         MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle())
       );
+    }
+
+    @Test
+    public void assertSuccessonListFetch() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void assertAuthorListFetch() throws Exception {
+        Book book = TestDataUtil.createTestBook(null);
+        bookService.createBook(book.getIsbn(), book);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].isbn").isString()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].title").value(book.getTitle())
+        );
     }
 }
