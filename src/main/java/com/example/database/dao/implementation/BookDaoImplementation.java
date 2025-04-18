@@ -1,6 +1,7 @@
 package com.example.database.dao.implementation;
 
 import com.example.database.dao.BookDao;
+import com.example.database.domain.Author;
 import com.example.database.domain.Book;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -47,6 +48,16 @@ public class BookDaoImplementation implements BookDao {
         );
 
         return results.stream().toList();
+    }
+
+    public void update(String isbn, Book book) {
+        jdbcTemplate.update(
+                "UPDATE books SET isbn = ?, title = ?, author_id = ? WHERE isbn = ?",
+                book.getIsbn(),
+                book.getTitle(),
+                book.getAuthorId(),
+                isbn
+        );
     }
 
     public static class BookRowMapper implements RowMapper<Book> {

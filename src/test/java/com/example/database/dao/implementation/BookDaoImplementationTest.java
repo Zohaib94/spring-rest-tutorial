@@ -1,6 +1,7 @@
 package com.example.database.dao.implementation;
 
 import com.example.database.TestDataUtil;
+import com.example.database.domain.Author;
 import com.example.database.domain.Book;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +54,24 @@ public class BookDaoImplementationTest {
         verify(jdbcTemplate).query(
                 eq("SELECT isbn, title, author_id FROM books"),
                 ArgumentMatchers.<BookDaoImplementation.BookRowMapper>any()
+        );
+    }
+
+    @Test
+    public void assertUpdateGeneratesCorrectSql() {
+        Book book = TestDataUtil.createTestBook();
+
+        book.setIsbn("112233");
+        book.setTitle("Abigail Rose");
+
+        underTest.update("ISBN00123", book);
+
+        verify(jdbcTemplate).update(
+                eq("UPDATE books SET isbn = ?, title = ?, author_id = ? WHERE isbn = ?"),
+                eq("112233"),
+                eq("Abigail Rose"),
+                eq(1L),
+                eq("ISBN00123")
         );
     }
 }
