@@ -50,4 +50,18 @@ public class AuthorDaoImplementationIntegrationTest {
         assertThat(authorList).hasSize(2);
         assertThat(authorList).containsExactly(authorA, authorB);
     }
+
+    @Test
+    public void assertAuthorCanBeUpdated() {
+        Author authorA = TestDataUtil.createTestAuthor();
+        underTest.create(authorA);
+
+        authorA.setName("Updated");
+        underTest.update(authorA.getId(), authorA);
+
+        Optional<Author> result = underTest.findOne(authorA.getId());
+
+        assertThat(result).isPresent();
+        assertThat(result.get()).isEqualTo(authorA);
+    }
 }
