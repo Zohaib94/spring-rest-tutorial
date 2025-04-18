@@ -2,6 +2,7 @@ package com.example.database.controllers;
 
 import com.example.database.TestDataUtil;
 import com.example.database.domain.entities.Author;
+import com.example.database.services.AuthorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class AuthorsControllerIntegrationTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
+    private AuthorService authorService;
 
     @Autowired
-    public AuthorsControllerIntegrationTest(MockMvc mockMvc) {
+    public AuthorsControllerIntegrationTest(MockMvc mockMvc, AuthorService authorService) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
+        this.authorService = authorService;
     }
 
     @Test
@@ -72,6 +75,24 @@ public class AuthorsControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void assertAuthorListFetch() throws Exception {
+        Author author = TestDataUtil.createTestAuthor();
+        authorService.createAuthor(author);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/authors")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].id").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].name").value(author.getName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].age").value(author.getAge())
         );
     }
 }
