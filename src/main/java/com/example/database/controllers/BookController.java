@@ -19,7 +19,7 @@ public class BookController {
   private Mapper<Book, BookDto> bookMapper;
   private BookService bookService;
 
-  public BookController(Mapper<Book, BookDto> bookMapper, BookService bookService) {
+  public BookController(BookService bookService, Mapper<Book, BookDto> bookMapper) {
     this.bookMapper = bookMapper;
     this.bookService = bookService;
   }
