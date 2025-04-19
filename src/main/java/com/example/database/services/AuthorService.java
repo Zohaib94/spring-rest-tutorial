@@ -12,4 +12,5 @@ public interface AuthorService {
     Optional<Author> findById(Long id);
     Author updateAuthor(Long id, Author author) throws AuthorNotFoundException;
     Author partialUpdate(Long id, Author author);
+    void deleteAuthor(Long id);
 }

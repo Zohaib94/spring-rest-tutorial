@@ -58,4 +58,9 @@ public class AuthorServiceImplementation implements AuthorService {
             return authorRepository.save(existingAuthor);
         }).orElseThrow(() -> new AuthorNotFoundException("Author does not exist in database"));
     }
+
+    @Override
+    public void deleteAuthor(Long id) {
+        authorRepository.deleteById(id);
+    }
 }

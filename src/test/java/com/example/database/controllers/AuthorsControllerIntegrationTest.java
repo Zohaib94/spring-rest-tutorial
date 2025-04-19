@@ -232,4 +232,18 @@ public class AuthorsControllerIntegrationTest {
                 MockMvcResultMatchers.status().isNotFound()
         );
     }
+
+    @Test
+    public void assertAuthorIsDeleted() throws Exception {
+        Author sourceAuthor = TestDataUtil.createTestAuthor();
+        sourceAuthor = authorService.saveAuthor(sourceAuthor);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .delete("/authors/" + sourceAuthor.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+            MockMvcResultMatchers.status().isNoContent()
+        );
+    }
 }
