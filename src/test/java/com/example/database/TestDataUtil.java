@@ -1,5 +1,6 @@
 package com.example.database;
 
+import com.example.database.domain.dto.AuthorDto;
 import com.example.database.domain.entities.Author;
 import com.example.database.domain.entities.Book;
 
@@ -33,6 +34,13 @@ public final class TestDataUtil {
                 .isbn("ISBN00124")
                 .title("My book 2")
                 .author(author)
+                .build();
+    }
+
+    public static AuthorDto createTestAuthorDto() {
+        return AuthorDto.builder()
+                .name("Test Author")
+                .age(30)
                 .build();
     }
 }

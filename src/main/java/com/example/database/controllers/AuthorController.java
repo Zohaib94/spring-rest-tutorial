@@ -2,6 +2,7 @@ package com.example.database.controllers;
 
 import com.example.database.domain.dto.AuthorDto;
 import com.example.database.domain.entities.Author;
+import com.example.database.exceptions.AuthorNotFoundException;
 import com.example.database.mappers.Mapper;
 import com.example.database.services.AuthorService;
 
@@ -12,12 +13,11 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 public class AuthorController {
@@ -32,7 +32,7 @@ public class AuthorController {
     @PostMapping(path = "/authors")
     public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto author) {
         Author authorEntity = authorMapper.mapFrom(author);
-        Author savedAuthor = authorService.createAuthor(authorEntity);
+        Author savedAuthor = authorService.saveAuthor(authorEntity);
 
         return new ResponseEntity<>(authorMapper.mapTo(savedAuthor), HttpStatus.CREATED);
     }
@@ -53,4 +53,17 @@ public class AuthorController {
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
+    @PutMapping(path = "/authors/{id}")
+    public ResponseEntity<AuthorDto> createAuthor(@PathVariable Long id, @RequestBody AuthorDto author) {
+        Author authorEntity = authorMapper.mapFrom(author);
+        
+        try {
+            Author savedAuthor = authorService.updateAuthor(id, authorEntity);
+            AuthorDto saveAuthorDto = authorMapper.mapTo(savedAuthor);
+
+            return new ResponseEntity<>(saveAuthorDto, HttpStatus.OK);
+        } catch (AuthorNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

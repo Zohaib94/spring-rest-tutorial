@@ -1,6 +1,7 @@
 package com.example.database.services.implementation;
 
 import com.example.database.domain.entities.Author;
+import com.example.database.exceptions.AuthorNotFoundException;
 import com.example.database.repositories.AuthorRepository;
 import com.example.database.services.AuthorService;
 
@@ -20,7 +21,7 @@ public class AuthorServiceImplementation implements AuthorService {
     }
 
     @Override
-    public Author createAuthor(Author author) {
+    public Author saveAuthor(Author author) {
         return authorRepository.save(author);
     }
 
@@ -32,5 +33,17 @@ public class AuthorServiceImplementation implements AuthorService {
     @Override
     public Optional<Author> findById(Long id) {
         return authorRepository.findById(id);
+    }
+
+    @Override
+    public Author updateAuthor(Long id, Author author) throws AuthorNotFoundException {
+        Optional<Author> authorEntity = findById(id);
+
+        if (authorEntity.isEmpty()) {
+            throw new AuthorNotFoundException("Author does not exist in database");
+        }
+
+        author.setId(id);
+        return saveAuthor(author);
     }
 }
