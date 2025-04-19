@@ -1,44 +1,47 @@
 package com.example.database.controllers;
 
 import com.example.database.TestDataUtil;
-import com.example.database.domain.entities.Author;
+import com.example.database.config.RabbitMQConfig;
+import com.example.database.config.TestContainersConfig;
 import com.example.database.domain.entities.Book;
 import com.example.database.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class BookControllerIntegrationTests {
-    @MockBean
-    private RabbitTemplate rabbitTemplate;
+@TestPropertySource(properties = {
+    "spring.rabbitmq.listener.simple.retry.enabled=false",
+    "spring.rabbitmq.listener.simple.acknowledge-mode=auto"
+})
+public class BookControllerIntegrationTests extends TestContainersConfig {
+    private final MockMvc mockMvc;
+    private final ObjectMapper objectMapper;
+    private final BookService bookService;
+    private final RabbitTemplate rabbitTemplate;
     
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
-    private BookService bookService;
-
     @Autowired
-    public BookControllerIntegrationTests(MockMvc mockMvc, BookService bookService) {
+    public BookControllerIntegrationTests(MockMvc mockMvc, BookService bookService, RabbitTemplate rabbitTemplate) {
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
         this.bookService = bookService;
+        this.rabbitTemplate = rabbitTemplate;
     }
-
+    
     @Test
     public void assertBookIsCreated() throws Exception {
         Book book = TestDataUtil.createTestBook(null);
@@ -229,5 +232,26 @@ public class BookControllerIntegrationTests {
         ).andExpect(
             MockMvcResultMatchers.status().isNoContent()
         );
+    }
+
+    @Test
+    public void assertBookMessageIsSentAndReceived() throws Exception {
+        // Create and save a book
+        Book book = TestDataUtil.createTestBook(null);
+        book = bookService.createBook("00123", book);
+        
+        // Send the message
+        rabbitTemplate.convertAndSend(
+            RabbitMQConfig.EXCHANGE_NAME,
+            RabbitMQConfig.ROUTING_KEY,
+            book
+        );
+        
+        Thread.sleep(1000); // Wait for 1 second
+        
+        var retrievedBook = bookService.findByIsbn(book.getIsbn());
+        assertTrue(retrievedBook.isPresent(), "Book should be found in the database");
+        assertEquals(book.getTitle() + " - Processed", retrievedBook.get().getTitle(), 
+            "Book title in database should match the sent book title");
     }
 }

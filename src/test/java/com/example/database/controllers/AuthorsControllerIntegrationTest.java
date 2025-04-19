@@ -1,6 +1,7 @@
 package com.example.database.controllers;
 
 import com.example.database.TestDataUtil;
+import com.example.database.config.TestContainersConfig;
 import com.example.database.domain.dto.AuthorDto;
 import com.example.database.domain.entities.Author;
 import com.example.database.services.AuthorService;
@@ -11,9 +12,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -21,10 +22,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
-public class AuthorsControllerIntegrationTest {
-    @MockBean
-    private RabbitTemplate rabbitTemplate;
-
+@TestPropertySource(properties = {
+    "spring.rabbitmq.listener.simple.retry.enabled=false",
+    "spring.rabbitmq.listener.simple.acknowledge-mode=auto"
+})
+public class AuthorsControllerIntegrationTest extends TestContainersConfig {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
     private AuthorService authorService;
