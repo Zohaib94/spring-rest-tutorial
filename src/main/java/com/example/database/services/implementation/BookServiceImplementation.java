@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,7 +45,7 @@ public class BookServiceImplementation implements BookService {
 
     @Override
     public Book partialUpdate(String isbn, Book bookEntity) throws BookNotFoundException {
-        bookEntity.setIsbn(isbn);;
+        bookEntity.setIsbn(isbn);
 
         return bookRepository.findById(isbn).map(existingBook -> {
             Optional.ofNullable(bookEntity.getTitle()).ifPresent(existingBook::setTitle);
@@ -54,5 +56,10 @@ public class BookServiceImplementation implements BookService {
     @Override
     public void deleteBook(String isbn) {
       bookRepository.deleteById(isbn);
+    }
+
+    @Override
+    public Page<Book> findAll(Pageable pageable) {
+      return bookRepository.findAll(pageable);
     }
 }
