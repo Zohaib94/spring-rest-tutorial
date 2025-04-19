@@ -130,4 +130,42 @@ public class BookControllerIntegrationTests {
                 MockMvcResultMatchers.status().isNotFound()
         );
     }
+
+    @Test
+    public void assertBookIsUpdated() throws Exception {
+        Book book = TestDataUtil.createTestBook(null);
+        book = bookService.createBook("00123", book);
+
+        book.setTitle("New title");
+        String bookJson = objectMapper.writeValueAsString(book);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .put("/books/" + book.getIsbn())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bookJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void assertUpdatedBookIsReturned() throws Exception {
+      Book book = TestDataUtil.createTestBook(null);
+      book = bookService.createBook("00123", book);
+
+      book.setTitle("New title");
+      String bookJson = objectMapper.writeValueAsString(book);
+
+      mockMvc.perform(
+              MockMvcRequestBuilders
+                      .put("/books/" + book.getIsbn())
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(bookJson)
+      ).andExpect(
+        MockMvcResultMatchers.jsonPath("$.isbn").isString()
+      ).andExpect(
+        MockMvcResultMatchers.jsonPath("$.title").value("New title")
+      );
+    }
 }

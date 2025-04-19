@@ -9,4 +9,5 @@ public interface BookService {
   Book createBook(String isbn, Book book);
   List<Book> findAll();
   Optional<Book> findByIsbn(String isbn);
+  Boolean isExists(String isbn);
 }

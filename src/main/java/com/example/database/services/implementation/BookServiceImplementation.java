@@ -34,4 +34,9 @@ public class BookServiceImplementation implements BookService {
     public Optional<Book> findByIsbn(String isbn) {
       return bookRepository.findById(isbn);
     }
+
+    @Override
+    public Boolean isExists(String isbn) {
+      return bookRepository.existsById(isbn);
+    }
 }
