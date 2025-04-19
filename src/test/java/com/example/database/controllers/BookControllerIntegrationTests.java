@@ -87,4 +87,47 @@ public class BookControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$[0].title").value(book.getTitle())
         );
     }
+
+    @Test
+    public void assertBookFetchIsSuccess() throws Exception {
+        final String isbn = "00123";
+        Book book = TestDataUtil.createTestBook(null);
+        bookService.createBook(isbn, book);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/books/" + isbn)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void assertBookIsFetched() throws Exception {
+      final String isbn = "00123";
+      Book book = TestDataUtil.createTestBook(null);
+      bookService.createBook(isbn, book);
+
+      mockMvc.perform(
+              MockMvcRequestBuilders
+                      .get("/books/" + isbn)
+                      .contentType(MediaType.APPLICATION_JSON)
+      ).andExpect(
+          MockMvcResultMatchers.jsonPath("$.isbn").value(isbn)
+      ).andExpect(
+          MockMvcResultMatchers.jsonPath("$.title").value(book.getTitle())
+      );
+    }
+
+    @Test
+    public void assertBookIsNotFetched() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/books/0")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        );
+    }
 }

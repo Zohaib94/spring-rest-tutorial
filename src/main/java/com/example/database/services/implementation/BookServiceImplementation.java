@@ -5,6 +5,7 @@ import com.example.database.repositories.BookRepository;
 import com.example.database.services.BookService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -27,5 +28,10 @@ public class BookServiceImplementation implements BookService {
     @Override
     public List<Book> findAll() {
       return StreamSupport.stream(bookRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Book> findByIsbn(String isbn) {
+      return bookRepository.findById(isbn);
     }
 }
