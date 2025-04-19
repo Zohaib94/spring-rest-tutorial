@@ -1,6 +1,7 @@
 package com.example.database.controllers;
 
 import com.example.database.TestDataUtil;
+import com.example.database.domain.entities.Author;
 import com.example.database.domain.entities.Book;
 import com.example.database.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -205,5 +206,19 @@ public class BookControllerIntegrationTests {
       ).andExpect(
         MockMvcResultMatchers.jsonPath("$.title").value("New title")
       );
+    }
+
+    @Test
+    public void assertBookIsDeleted() throws Exception {
+        Book sourceBook = TestDataUtil.createTestBook(null);
+        sourceBook = bookService.createBook("0123", sourceBook);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .delete("/books/" + sourceBook.getIsbn())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+            MockMvcResultMatchers.status().isNoContent()
+        );
     }
 }

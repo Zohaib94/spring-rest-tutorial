@@ -50,4 +50,9 @@ public class BookServiceImplementation implements BookService {
             return bookRepository.save(existingBook);
         }).orElseThrow(() -> new BookNotFoundException("Book does not exist in database"));
     }
+
+    @Override
+    public void deleteBook(String isbn) {
+      bookRepository.deleteById(isbn);
+    }
 }
