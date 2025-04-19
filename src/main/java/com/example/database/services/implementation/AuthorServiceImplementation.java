@@ -5,6 +5,7 @@ import com.example.database.repositories.AuthorRepository;
 import com.example.database.services.AuthorService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -26,5 +27,10 @@ public class AuthorServiceImplementation implements AuthorService {
     @Override
     public List<Author> findAll() {
         return StreamSupport.stream(authorRepository.findAll().spliterator(), false).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Author> findById(Long id) {
+        return authorRepository.findById(id);
     }
 }

@@ -6,6 +6,7 @@ import com.example.database.mappers.Mapper;
 import com.example.database.services.AuthorService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -40,4 +42,15 @@ public class AuthorController {
         List<Author> authors = authorService.findAll();
         return authors.stream().map(authorMapper::mapTo).collect(Collectors.toList());
     }
+
+    @GetMapping("/authors/{id}")
+    public ResponseEntity<AuthorDto> getAuthor(@PathVariable Long id) {
+        Optional<Author> authorEntity = authorService.findById(id);
+
+        return authorEntity.map(author -> {
+            AuthorDto authorDto = authorMapper.mapTo(author);
+            return new ResponseEntity<>(authorDto, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
 }

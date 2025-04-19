@@ -95,4 +95,47 @@ public class AuthorsControllerIntegrationTest {
                 MockMvcResultMatchers.jsonPath("$[0].age").value(author.getAge())
         );
     }
+
+    @Test
+    public void assertAuthorFetchIsSuccess() throws Exception {
+        Author author = TestDataUtil.createTestAuthor();
+        author = authorService.createAuthor(author);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/authors/" + author.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void assertAuthorIsFetched() throws Exception {
+        Author author = TestDataUtil.createTestAuthor();
+        author = authorService.createAuthor(author);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/authors/" + author.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value(author.getName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.age").value(author.getAge())
+        );
+    }
+
+    @Test
+    public void assertAuthorIsNotFetched() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .get("/authors/0")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        );
+    }
 }
