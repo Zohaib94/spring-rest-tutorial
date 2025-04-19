@@ -1,6 +1,7 @@
 package com.example.database.services.implementation;
 
 import com.example.database.domain.entities.Book;
+import com.example.database.exceptions.BookNotFoundException;
 import com.example.database.repositories.BookRepository;
 import com.example.database.services.BookService;
 
@@ -38,5 +39,15 @@ public class BookServiceImplementation implements BookService {
     @Override
     public Boolean isExists(String isbn) {
       return bookRepository.existsById(isbn);
+    }
+
+    @Override
+    public Book partialUpdate(String isbn, Book bookEntity) throws BookNotFoundException {
+        bookEntity.setIsbn(isbn);;
+
+        return bookRepository.findById(isbn).map(existingBook -> {
+            Optional.ofNullable(bookEntity.getTitle()).ifPresent(existingBook::setTitle);
+            return bookRepository.save(existingBook);
+        }).orElseThrow(() -> new BookNotFoundException("Book does not exist in database"));
     }
 }

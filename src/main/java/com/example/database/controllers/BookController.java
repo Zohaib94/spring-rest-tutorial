@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.database.domain.dto.BookDto;
 import com.example.database.domain.entities.Book;
+import com.example.database.exceptions.BookNotFoundException;
 import com.example.database.mappers.Mapper;
 import com.example.database.services.BookService;
 
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -55,5 +57,17 @@ public class BookController {
           return new ResponseEntity<>(bookDto, HttpStatus.OK);
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    
+
+    @PatchMapping(path = "/books/{isbn}")
+    public ResponseEntity<BookDto> partialUpdateBook(@PathVariable String isbn, @RequestBody BookDto book) {
+        Book bookEntity = bookMapper.mapFrom(book);
+        try {
+            Book savedBook = bookService.partialUpdate(isbn, bookEntity);
+            BookDto saveBookDto = bookMapper.mapTo(savedBook);
+
+            return new ResponseEntity<>(saveBookDto, HttpStatus.OK);
+        } catch (BookNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
