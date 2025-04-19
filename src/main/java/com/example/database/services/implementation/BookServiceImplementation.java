@@ -1,5 +1,6 @@
 package com.example.database.services.implementation;
 
+import com.example.database.config.RabbitMQConfig;
 import com.example.database.domain.entities.Book;
 import com.example.database.exceptions.BookNotFoundException;
 import com.example.database.repositories.BookRepository;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookServiceImplementation implements BookService {
     private BookRepository bookRepository;
-
-    public BookServiceImplementation(BookRepository bookRepository) {
+    private RabbitTemplate rabbitTemplate;
+    public BookServiceImplementation(BookRepository bookRepository, RabbitTemplate rabbitTemplate) {
         this.bookRepository = bookRepository;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Override
@@ -59,7 +62,17 @@ public class BookServiceImplementation implements BookService {
     }
 
     @Override
-    public Page<Book> findAll(Pageable pageable) {
-      return bookRepository.findAll(pageable);
+    public Page<Book> findAll(Pageable pageable) throws Exception {
+      Page<Book> books = bookRepository.findAll(pageable);
+
+       books.getContent().forEach(book -> {
+         rabbitTemplate.convertAndSend(
+             RabbitMQConfig.EXCHANGE_NAME,
+             RabbitMQConfig.ROUTING_KEY,
+             book
+         );
+       });
+
+      return books;
     }
 }

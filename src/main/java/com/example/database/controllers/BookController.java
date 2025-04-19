@@ -47,8 +47,12 @@ public class BookController {
 
     @GetMapping(path = "/books")
     public Page<BookDto> listBooks(Pageable pageable) {
-      Page<Book> books = bookService.findAll(pageable);
-      return books.map(bookMapper::mapTo);
+      try {
+        Page<Book> books = bookService.findAll(pageable);
+        return books.map(bookMapper::mapTo);
+      } catch (Exception e) {
+        return null;
+      }
     }
 
     @GetMapping("/books/{isbn}")

@@ -6,8 +6,10 @@ import com.example.database.domain.entities.Book;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -19,6 +21,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BookRepositoryIntegrationTest {
+    @MockBean
+    private RabbitTemplate rabbitTemplate;
 
     private BookRepository underTest;
 

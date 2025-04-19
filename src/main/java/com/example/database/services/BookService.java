@@ -10,10 +10,10 @@ import com.example.database.domain.entities.Book;
 
 public interface BookService {
   Book createBook(String isbn, Book book);
-  List<Book> findAll();
+  List<Book> findAll() throws Exception;
   Optional<Book> findByIsbn(String isbn);
   Boolean isExists(String isbn);
   Book partialUpdate(String isbn, Book bookEntity);
   void deleteBook(String isbn);
-  Page<Book> findAll(Pageable pageable);
+  Page<Book> findAll(Pageable pageable) throws Exception;
 }
