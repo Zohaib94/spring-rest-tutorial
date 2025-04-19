@@ -186,4 +186,50 @@ public class AuthorsControllerIntegrationTest {
                 MockMvcResultMatchers.status().isNotFound()
         );
     }
+
+    @Test
+    public void assertAuthorIsUpdatedWithPatchEndpoint() throws Exception {
+        Author sourceAuthor = TestDataUtil.createTestAuthor();
+        authorService.saveAuthor(sourceAuthor);
+
+        AuthorDto targetAuthorDto = TestDataUtil.createTestAuthorDto();
+        targetAuthorDto.setId(sourceAuthor.getId());
+        targetAuthorDto.setName("Updated Name");
+
+        String targetAuthorJson = objectMapper.writeValueAsString(targetAuthorDto);
+        
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .patch("/authors/" + sourceAuthor.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(targetAuthorJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.id").value(sourceAuthor.getId())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("Updated Name")
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.age").value(targetAuthorDto.getAge())
+        );
+    }
+
+    @Test
+    public void assertAuthorIsNotFoundDuringUpdateWithPatchEndpoint() throws Exception {
+        Author sourceAuthor = TestDataUtil.createTestAuthor();
+        authorService.saveAuthor(sourceAuthor);
+
+        AuthorDto targetAuthorDto = TestDataUtil.createTestAuthorDto();
+        targetAuthorDto.setId(sourceAuthor.getId());
+        targetAuthorDto.setName("Updated Name");
+
+        String targetAuthorJson = objectMapper.writeValueAsString(targetAuthorDto);
+        
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .patch("/authors/" + 0)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(targetAuthorJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        );
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -54,11 +55,24 @@ public class AuthorController {
     }
     
     @PutMapping(path = "/authors/{id}")
-    public ResponseEntity<AuthorDto> createAuthor(@PathVariable Long id, @RequestBody AuthorDto author) {
+    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id, @RequestBody AuthorDto author) {
         Author authorEntity = authorMapper.mapFrom(author);
         
         try {
             Author savedAuthor = authorService.updateAuthor(id, authorEntity);
+            AuthorDto saveAuthorDto = authorMapper.mapTo(savedAuthor);
+
+            return new ResponseEntity<>(saveAuthorDto, HttpStatus.OK);
+        } catch (AuthorNotFoundException exception) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping(path = "/authors/{id}")
+    public ResponseEntity<AuthorDto> partialUpdateAuthor(@PathVariable Long id, @RequestBody AuthorDto author) {
+        Author authorEntity = authorMapper.mapFrom(author);
+        try {
+            Author savedAuthor = authorService.partialUpdate(id, authorEntity);
             AuthorDto saveAuthorDto = authorMapper.mapTo(savedAuthor);
 
             return new ResponseEntity<>(saveAuthorDto, HttpStatus.OK);
