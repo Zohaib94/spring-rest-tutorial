@@ -1,41 +1,31 @@
 package com.example.database.controllers;
 
+import com.example.database.BaseIntegrationTest;
 import com.example.database.TestDataUtil;
-import com.example.database.config.TestContainersConfig;
 import com.example.database.domain.dto.AuthorDto;
 import com.example.database.domain.entities.Author;
 import com.example.database.services.AuthorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@AutoConfigureMockMvc
-@TestPropertySource(properties = {
-    "spring.rabbitmq.listener.simple.retry.enabled=false",
-    "spring.rabbitmq.listener.simple.acknowledge-mode=auto"
-})
-public class AuthorsControllerIntegrationTest extends TestContainersConfig {
-    private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
-    private AuthorService authorService;
-
+public class AuthorsControllerIntegrationTest extends BaseIntegrationTest {
+    
     @Autowired
-    public AuthorsControllerIntegrationTest(MockMvc mockMvc, AuthorService authorService) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = new ObjectMapper();
-        this.authorService = authorService;
+    private AuthorService authorService;
+    
+    private ObjectMapper objectMapper;
+    
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
     }
 
     @Test
@@ -97,11 +87,11 @@ public class AuthorsControllerIntegrationTest extends TestContainersConfig {
                         .get("/authors")
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].id").isNumber()
+                MockMvcResultMatchers.jsonPath("$[1].id").isNumber()
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].name").value(author.getName())
+                MockMvcResultMatchers.jsonPath("$[1].name").value(author.getName())
         ).andExpect(
-                MockMvcResultMatchers.jsonPath("$[0].age").value(author.getAge())
+                MockMvcResultMatchers.jsonPath("$[1].age").value(author.getAge())
         );
     }
 

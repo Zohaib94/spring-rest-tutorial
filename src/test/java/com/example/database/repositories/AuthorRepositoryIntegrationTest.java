@@ -1,20 +1,18 @@
 package com.example.database.repositories;
 
+import com.example.database.BaseIntegrationTest;
 import com.example.database.TestDataUtil;
-import com.example.database.config.TestContainersConfig;
 import com.example.database.domain.entities.Author;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class AuthorRepositoryIntegrationTest extends TestContainersConfig {
+public class AuthorRepositoryIntegrationTest extends BaseIntegrationTest {
     private AuthorRepository underTest;
 
     @Autowired
@@ -33,17 +31,19 @@ public class AuthorRepositoryIntegrationTest extends TestContainersConfig {
     }
 
     @Test
-    public void assertMultipleAuthorsAreCreatedAndLoaded() {
+    public void assertMultipleAuthorsAreCreatedAndLoaded() throws Exception {
         Author authorA = TestDataUtil.createTestAuthor();
         Author authorB = TestDataUtil.createTestAuthorB();
 
         underTest.save(authorA);
         underTest.save(authorB);
 
+        Author defaultAuthor = underTest.findById(1L).orElseThrow();
+
         Iterable<Author> authorList = underTest.findAll();
 
-        assertThat(authorList).hasSize(2);
-        assertThat(authorList).containsExactly(authorA, authorB);
+        assertThat(authorList).hasSize(3);
+        assertThat(authorList).containsExactly(defaultAuthor,authorA, authorB);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class AuthorRepositoryIntegrationTest extends TestContainersConfig {
     }
 
     @Test
-    public void assertAuthorsBelowAge() {
+    public void assertAuthorsBelowAge() throws Exception {
         Author authorA = TestDataUtil.createTestAuthor();
         Author authorB = TestDataUtil.createTestAuthor();
         Author authorC = TestDataUtil.createTestAuthor();
@@ -86,9 +86,11 @@ public class AuthorRepositoryIntegrationTest extends TestContainersConfig {
         underTest.save(authorB);
         underTest.save(authorC);
 
+        Author defaultAuthor = underTest.findById(1L).orElseThrow();
+
         Iterable<Author> authors = underTest.ageLessThan(40);
 
-        assertThat(authors).containsExactly(authorB, authorC);
+        assertThat(authors).containsExactly(defaultAuthor, authorB, authorC);
     }
 
     @Test

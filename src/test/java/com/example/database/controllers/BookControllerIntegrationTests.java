@@ -1,45 +1,37 @@
 package com.example.database.controllers;
 
+import com.example.database.BaseIntegrationTest;
 import com.example.database.TestDataUtil;
 import com.example.database.config.RabbitMQConfig;
-import com.example.database.config.TestContainersConfig;
 import com.example.database.domain.entities.Book;
 import com.example.database.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@AutoConfigureMockMvc
-@TestPropertySource(properties = {
-    "spring.rabbitmq.listener.simple.retry.enabled=false",
-    "spring.rabbitmq.listener.simple.acknowledge-mode=auto"
-})
-public class BookControllerIntegrationTests extends TestContainersConfig {
-    private final MockMvc mockMvc;
-    private final ObjectMapper objectMapper;
-    private final BookService bookService;
-    private final RabbitTemplate rabbitTemplate;
+public class BookControllerIntegrationTests extends BaseIntegrationTest {
     
     @Autowired
-    public BookControllerIntegrationTests(MockMvc mockMvc, BookService bookService, RabbitTemplate rabbitTemplate) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = new ObjectMapper();
-        this.bookService = bookService;
-        this.rabbitTemplate = rabbitTemplate;
+    private BookService bookService;
+    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
+    private ObjectMapper objectMapper;
+    
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
     }
     
     @Test
